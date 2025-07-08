@@ -14,3 +14,23 @@ model User {
   name      String
   createdAt DateTime @default(now())
 }
+
+model Client {
+  id        String   @id @default(uuid())
+  name      String
+  cnpj      String?  @unique
+  status    String   @default("Ativo")
+  createdAt DateTime @default(now())
+  
+  contacts  Contact[]
+}
+
+model Contact {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId  String
+}
