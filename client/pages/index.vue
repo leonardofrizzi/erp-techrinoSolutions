@@ -83,8 +83,7 @@ async function handleLogin() {
       errorMessage.value = error.value.data.message || 'Não foi possível fazer login.';
     } else {
       console.log('Login OK!', data.value);
-      
-      alert('Login realizado com sucesso! Redirecionando...');
+      await navigateTo('/dashboard');
     }
 
   } catch (e) {
@@ -94,6 +93,10 @@ async function handleLogin() {
     isLoading.value = false;
   }
 }
+
+definePageMeta({
+  layout: false, 
+});
 
 useHead({
   title: 'Login - Techrino Solutions'
