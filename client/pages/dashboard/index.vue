@@ -12,7 +12,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-500">Orçamentos Abertos</p>
-            <p class="text-2xl font-bold text-gray-900">12</p>
+            <p class="text-2xl font-bold text-gray-900">{{ pending ? '...' : stats.openQuotesCount }}</p>
           </div>
         </div>
       </div>
@@ -24,7 +24,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-500">Clientes Ativos</p>
-            <p class="text-2xl font-bold text-gray-900">8</p>
+            <p class="text-2xl font-bold text-gray-900">{{ pending ? '...' : stats.activeClientsCount }}</p>
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
           </div>
           <div class="ml-4">
             <p class="text-sm font-medium text-gray-500">Faturamento (Mês)</p>
-            <p class="text-2xl font-bold text-gray-900">R$ 15.230</p>
+            <p class="text-2xl font-bold text-gray-900">{{ pending ? '...' : formatCurrency(stats.monthlyRevenue) }}</p>
           </div>
         </div>
       </div>
@@ -55,10 +55,25 @@
 
     </div>
 
-    </div>
+  </div>
 </template>
 
 <script setup>
+const { data: stats, pending } = await useFetch('http://localhost:3001/dashboard/stats', {
+  default: () => ({
+    openQuotesCount: 0,
+    activeClientsCount: 0,
+    monthlyRevenue: 0,
+  })
+});
+
+function formatCurrency(value) {
+  if (typeof value !== 'number') {
+    return 'R$ 0,00';
+  }
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
 definePageMeta({
   layout: 'default',
 });

@@ -35,7 +35,7 @@ model Contact {
   client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId  String
 
-  quotes    Quote[] 
+  quotes    Quote[]
 }
 
 model Quote {
@@ -52,14 +52,34 @@ model Quote {
   contactId   String
 
   items       QuoteItem[]
+  transactions Transaction[]
 }
 
 model QuoteItem {
   id          String  @id @default(uuid())
-  description String  
+  description String
   quantity    Int
   unitPrice   Float
   totalPrice  Float
+
   quote       Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
   quoteId     String
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+model Transaction {
+  id              String          @id @default(uuid())
+  description     String
+  amount          Float
+  type            TransactionType
+  paymentMethod   String?
+  transactionDate DateTime
+  createdAt       DateTime        @default(now())
+
+  quote           Quote?          @relation(fields: [quoteId], references: [id])
+  quoteId         String?
 }
