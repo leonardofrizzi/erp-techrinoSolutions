@@ -3,7 +3,7 @@
     
     <div class="max-w-md w-full">
       <div class="flex justify-center mb-8">
-        <NuxtImg src="/techrino.webp" alt="Logo Techrino Solutions" class="h-24" densities="x1 x2" />
+        <NuxtImg src="/logotechrino.webp" alt="Logo Techrino Solutions" class="h-24" densities="x1 x2" />
       </div>
 
       <div class="bg-white/40 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20">
@@ -52,7 +52,7 @@
       </div>
       
       <p class="text-center text-gray-500 text-xs mt-8">
-        © {{ new Date().getFullYear() }} Techrino Solutions. Todos os direitos reservados.
+        © 2025 Techrino Solutions. Todos os direitos reservados.
       </p>
     </div>
   </div>
@@ -60,6 +60,8 @@
 
 <script setup>
 import { ref } from 'vue';
+
+const { setUser } = useAuth();
 
 const email = ref('');
 const password = ref('');
@@ -71,24 +73,32 @@ async function handleLogin() {
   isLoading.value = true;
 
   try {
-    const { data, error } = await useFetch('http://localhost:3001/login', {
+    await $fetch('http://localhost:3001/api/auth/login', {
       method: 'POST',
       body: {
         email: email.value,
         password: password.value,
       },
+      credentials: 'include',
     });
 
-    if (error.value) {
-      errorMessage.value = error.value.data.message || 'Não foi possível fazer login.';
-    } else {
-      console.log('Login OK!', data.value);
+    const user = await $fetch('http://localhost:3001/api/auth/profile', {
+      credentials: 'include',
+    });
+    
+    if (user) {
+      setUser(user);
       await navigateTo('/dashboard');
+    } else {
+      errorMessage.value = 'Não foi possível obter os dados do usuário.';
     }
 
-  } catch (e) {
-    console.error('Erro inesperado:', e);
-    errorMessage.value = 'Ocorreu um erro de conexão. Tente novamente.';
+  } catch (err) {
+    const message = err.data?.message || 'Credenciais inválidas ou erro de conexão.';
+    errorMessage.value = message;
+    if (message === 'Token inválido.') {
+      errorMessage.value = "Sessão inválida. Tente novamente."
+    }
   } finally {
     isLoading.value = false;
   }

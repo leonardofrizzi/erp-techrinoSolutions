@@ -47,6 +47,17 @@ const navigationLinks = [
 ];
 
 async function handleLogout() {
-  await navigateTo('/');
+  const { clearUser } = useAuth();
+  
+  try {
+    await $fetch('http://localhost:3001/api/auth/logout', {
+      method: 'POST',
+    });
+  } catch (err) {
+    console.error("Logout failed", err);
+  } finally {
+    clearUser();
+    await navigateTo('/');
+  }
 }
 </script>

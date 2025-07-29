@@ -76,7 +76,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 
-const { data: clients, pending, error, refresh } = await useFetch('http://localhost:3001/clients');
+const { data: clients, pending, error, refresh } = await useFetch('http://localhost:3001/api/clients');
 
 const searchQuery = ref('');
 
@@ -110,13 +110,13 @@ function closeModal() {
 async function handleSaveClient(clientData) {
   try {
     if (modalMode.value === 'add') {
-      await $fetch('http://localhost:3001/clients', {
+      await $fetch('http://localhost:3001/api/clients', {
         method: 'POST',
         body: clientData
       });
       alert('Cliente adicionado com sucesso!');
     } else {
-      await $fetch(`http://localhost:3001/clients/${clientData.id}`, {
+      await $fetch(`http://localhost:3001/api/clients/${clientData.id}`, {
         method: 'PUT',
         body: clientData
       });
@@ -131,6 +131,9 @@ async function handleSaveClient(clientData) {
   }
 }
 
-definePageMeta({ layout: 'default' });
+definePageMeta({
+  layout: 'default',
+  middleware: 'auth'
+});
 useHead({ title: 'Clientes - Techrino Solutions' });
 </script>
