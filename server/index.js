@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
+import transactionRoutes from './routes/transaction.routes.js';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -312,6 +313,8 @@ app.get('/dashboard/stats', async (req, res) => {
     res.status(500).json({ message: "Não foi possível buscar as estatísticas." });
   }
 });
+
+app.use('/api/financeiro', transactionRoutes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
